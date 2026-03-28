@@ -85,3 +85,52 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ success: false, message: "Error while logging in"});
     }
 };
+
+exports.getUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+        res.status(200).json({
+            success: true,
+            message: "Users fetched successfully",
+            data: {
+                users
+            }
+        });
+    } catch (error) {
+        console.log("Error occur in fetching users:", error.message);
+        res.status(500).json({ success: false, message: "Error while fetching users"});
+    }
+};
+
+exports.deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByIdAndDelete(id);
+        if(!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        res.status(200).json({
+            success: true,
+            message: "User deleted successfully"
+        });
+    } catch (error) {
+        console.error("Error deleting user:", error.message);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+};
+exports.updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByIdAndUpdate(id, req.body);
+        if(!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        res.status(200).json({
+            success: true,
+            message: "User updated successfully"
+        });
+    } catch (error) {
+        console.error("Error updating user:", error.message);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+};
